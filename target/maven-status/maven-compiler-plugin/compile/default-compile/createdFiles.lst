@@ -1,0 +1,6 @@
+com\conference\registration\repositories\PersonRepository.class
+com\conference\registration\services\PersonService.class
+com\conference\registration\models\PersonModel.class
+com\conference\registration\controllers\PersonController.class
+com\conference\registration\ConferencesApplication.class
+com\conference\registration\ServletInitializer.class

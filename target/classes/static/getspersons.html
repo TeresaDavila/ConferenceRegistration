@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIL Guadalajara</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        .center-text {text-align: center;}</style>
+</head>
+<body>
+<div class="center-text pt-5">
+    <h2>Registration Data</h2>
+</div>
+<form class="container">
+    <button type="button" class="btn btn-primary" onclick="findPerson('personEmail','/findPersonByEmail/')">Search by email</button>
+    <div class="mb-3 mt-3">
+        <label for="personEmail" class="form-label">Email:</label>
+        <input type="text" class="form-control" id="personEmail" placeholder="Enter email" name="personEmail">
+    </div>
+    <button type="button" class="btn btn-primary" onclick="findPerson('personName','/findPersonByName/')">Search by name</button>
+    <div class="mb-3 mt-3">
+        <label for="personName" class="form-label">Name:</label>
+        <input type="text" class="form-control" id="personName" placeholder="Enter name" name="personName">
+    </div>
+    <div class="center-text pt-5">
+        <button type="button" class="btn btn-secondary" onclick="populateTableFromJSON(url)">Update cells</button>
+    </div>
+</form>
+
+<table id="personsTable" class="container table table-hover">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Age</th>
+        <th>Occupation</th>
+        <th>Gender</th>
+        <th>Options</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Table body will be populated dynamically -->
+    </tbody>
+</table>
+
+<script>
+
+    // URL from which JSON data will be fetched
+    const url = "http://fil-env.eba-ahvy2im3.us-east-2.elasticbeanstalk.com/persons";
+    //const url = "http://localhost:8080/persons";
+    //1
+    // Function to populate table from JSON data
+    async function populateTableFromJSON(url) {
+        cleanTableRows();
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const tableBody = document.querySelector("#personsTable tbody");
+
+            data.forEach(person => {
+                const row = document.createElement("tr");
+                let idNumber = person.id;
+                row.innerHTML = `
+                    <td class="id">${idNumber}</td>
+                    <td contenteditable="false">${person.name}</td>
+                    <td contenteditable="false">${person.email}</td>
+                    <td contenteditable="false">${person.age}</td>
+                    <td contenteditable="false">${person.occupation}</td>
+                    <td contenteditable="false">${person.gender}</td>
+                    <td><button type="button" class="btn btn-danger" id="${idNumber}" onclick="deletePersonButton(id)">Delete</button>
+                    <button type="button" class="btn btn-warning" id="${idNumber}" onclick="editPerson(id)">Edit</button></td>
+                `;
+                row.setAttribute("id", idNumber);
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error fetching data: ', error);
+        }
+    }
+
+    // Call the function to populate table
+    populateTableFromJSON(url);
+
+    function editPerson(buttonPressId) {
+        //obtener la row que fue llamada
+        let row = document.getElementById(buttonPressId);
+
+        let nameCell = row.children.item(1);
+        let emailCell = row.children.item(2);
+        let ageCell = row.children.item(3);
+        let occupationCell = row.children.item(4);
+        let genderCell = row.children.item(5);
+
+        //cambiar la propiedad contenteditable
+        nameCell.setAttribute("contenteditable", "true");
+        emailCell.setAttribute("contenteditable", "false");
+        ageCell.setAttribute("contenteditable", "true");
+        occupationCell.setAttribute("contenteditable", "true");
+        genderCell.setAttribute("contenteditable", "false");
+
+        //poner el cursor sobre la celda 1
+        row.children.item(1).focus();
+
+        //cambiar el texto y color del boton de editar por guardar
+        let editButton = row.children.item(6).children.item(1);
+        editButton.setAttribute("class","btn btn-success");
+        editButton.innerHTML = "Save";
+
+
+        //al presionar el botón de guardar mandar llamar al metodo saveStudent(con los datos de la fila)
+        editButton.setAttribute("onClick","savePerson("+buttonPressId+")");
+
+    }
+
+    function savePerson(idButtonPress) {
+
+        console.log(idButtonPress);
+
+        let row = document.getElementById(idButtonPress);
+
+        let idCell = row.children.item(0);
+        let nameCell = row.children.item(1);
+        let emailCell = row.children.item(2);
+        let ageCell = row.children.item(3);
+        let occupationCell = row.children.item(4);
+        let genderCell = row.children.item(5);
+
+        let id = idCell.innerHTML;
+        let name = nameCell.innerHTML;
+        let email = emailCell.innerHTML;
+        let age = ageCell.innerHTML;
+        let occupation = occupationCell.innerHTML;
+        let gender = genderCell.innerHTML;
+
+        if (name === "" || email === "" || email === "" || occupation === "" || gender === "") {
+            alert("Please fill in all fields.");
+            return; // Salir de la función si algún campo está vacío
+        }
+
+        // Validar que el nombre solo contenga letras (sin números ni caracteres especiales)
+        const nameRegex = /^[a-zA-Z\u00C0-\u017F\s]+$/;
+        if (!nameRegex.test(name)) {
+            alert("Please don't give a fake name.");
+            return; // Salir de la función si el nombre no es válido
+        }
+        if (name.length < 3) {
+            alert("Please don't give a fake name.");
+            return; // Salir de la función si el nombre no es válido
+        }
+
+        // Validar que la edad esté en un rango permitido
+        if (age<12 || age>110) {
+            alert("Invalid age.");
+            return; // Salir de la función si la edad no es permitida
+        }
+
+
+
+
+        console.log("row.children.item(2)="+nameCell.innerHTML);
+
+
+        const personUpdated = {
+            id : idCell.innerHTML,
+            name : nameCell.innerHTML,
+            email : emailCell.innerHTML,
+            age : ageCell.innerHTML,
+            occupation : occupationCell.innerHTML,
+            gender : genderCell.innerHTML
+        };
+
+
+        const apiUrl = "http://fil-env.eba-ahvy2im3.us-east-2.elasticbeanstalk.com/persons";
+        //const apiUrl = "http://localhost:8080/persons";
+//2
+
+        // Configure the request
+        const requestOptions = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(personUpdated)
+        };
+
+        // Make the POST request
+        fetch(apiUrl, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(personFromAPI => {
+                console.log('Success:', personFromAPI);
+                alert("Successfully updated");
+                populateTableFromJSON(url);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error here
+            });
+
+    }
+    function findPerson(id,findPath){
+        cleanTableRows();
+        populateTableFromJSON(url+findPath+document.getElementById(id).value);
+    }
+
+    function cleanTableRows() {
+        var tableHeaderRowCount = 1;
+        var table = document.getElementById('personsTable');
+        var rowCount = table.rows.length;
+        for (var i = tableHeaderRowCount; i < rowCount; i++) {
+            table.deleteRow(tableHeaderRowCount);
+        }
+    }
+
+    function deletePersonButton(id) {
+        if (confirm("Estas seguro de eliminar el registro: "+id)) {
+            deletePerson(id);
+        } else {
+            console.log("No se ha eliminado el registro");
+        }
+    }
+
+    function deletePerson(id) {
+        const deleteUrl = "http://fil-env.eba-ahvy2im3.us-east-2.elasticbeanstalk.com/persons/delete-person-by-id?id="+id;
+        //const deleteUrl = "http://localhost:8080/persons/delete-person-by-id?id="+id;
+        //3
+        fetch(deleteUrl, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+                // Add any other headers if required
+            },
+            // You can include a request body if necessary
+            //body: JSON.stringify({ id: id })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok ');
+                }
+                return response;
+            })
+            .then(data => {
+                console.log('OK', data);
+                alert("Successfully removed");
+                populateTableFromJSON(url);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation: ', error);
+                // Handle errors, show an error message, or retry the operation
+            });
+    }
+</script>
+
+</body>
+</html>

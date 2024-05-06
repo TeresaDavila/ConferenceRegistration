@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>FIL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</head>
+<body>
+
+<div class="container pt-5">
+    <div class="center-text">
+        <h1>Attend the FIL Guadalajara</h1>
+    </div>
+    <h3>Register now</h3>
+    <form action="/action_page.php">
+        <div class="mb-3 mt-3">
+            <label for="personEmail" class="form-label">Email:</label>
+            <input type="email" class="form-control" id="personEmail" placeholder="Enter email" name="personEmail" onkeyup="no_spaces(this);" required onblur="validateEmail()">
+            <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            <div id="emailError" class="invalid-feedback"></div>
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="personName" class="form-label">Name:</label>
+            <input type="text" class="form-control" id="personName" placeholder="Enter name" name="personName" maxlength="40">
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="personAge" class="form-label">Age:</label>
+            <input type="number" class="form-control" min="12" max="110" id="personAge" placeholder="Enter age" name="personAge" required>
+            <div id="ageHelp" class="form-text">Minimum age of 12 years.</div>
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="personOccupation" class="form-label">Occupation:</label>
+            <input type="text" class="form-control" list="browsers" id="personOccupation" placeholder="Enter occupation" name="personOccupation" maxlength="40" required>
+            <datalist id="browsers">
+                <option value="Accountant"></option>
+                <option value="Actor / Actress"></option>
+                <option value="Architect"></option>
+                <option value="Astronomer"></option>
+                <option value="Author"></option>
+                <option value="Baker"></option>
+                <option value="Bricklayer"></option>
+                <option value="Bus driver"></option>
+                <option value="Butcher"></option>
+                <option value="Carpenter"></option>
+                <option value="Chef / Cook"></option>
+                <option value="Cleaner"></option>
+                <option value="Dentist"></option>
+                <option value="Designer"></option>
+                <option value="Doctor"></option>
+                <option value="Dustman / Refuse collector"></option>
+                <option value="Electrician"></option>
+                <option value="Engineer"></option>
+                <option value="Factory worker"></option>
+                <option value="Farmer"></option>
+                <option value="Fireman / Fire fighter"></option>
+                <option value="Fisherman"></option>
+                <option value="Florist"></option>
+                <option value="Gardener"></option>
+                <option value="Hairdresser"></option>
+                <option value="Journalist"></option>
+                <option value="Judge"></option>
+                <option value="Lawyer"></option>
+                <option value="Lecturer"></option>
+                <option value="Librarian"></option>
+                <option value="Lifeguard"></option>
+                <option value="Mechanic"></option>
+                <option value="Model"></option>
+                <option value="Newsreader"></option>
+                <option value="Nurse"></option>
+                <option value="Optician"></option>
+                <option value="Painter"></option>
+                <option value="Pharmacist"></option>
+                <option value="Photographer"></option>
+                <option value="Pilot"></option>
+                <option value="Plumber"></option>
+                <option value="Politician"></option>
+                <option value="Policeman / Policewoman"></option>
+                <option value="Postman"></option>
+                <option value="Real estate agent"></option>
+                <option value="Receptionist"></option>
+                <option value="Scientist"></option>
+                <option value="Secretary"></option>
+                <option value="Shop assistant"></option>
+                <option value="Software developer"></option>
+                <option value="Soldier"></option>
+                <option value="Student"></option>
+                <option value="Tailor"></option>
+                <option value="Taxi driver"></option>
+                <option value="Teacher"></option>
+                <option value="Translator"></option>
+                <option value="Traffic warden"></option>
+                <option value="Travel agent"></option>
+                <option value="Veterinary doctor"></option>
+                <option value="Waiter / Waitress"></option>
+                <option value="Window cleaner"></option>
+            </datalist>
+        </div>
+
+        <div class="mb-3 mt-3">
+            <label for="personGender" class="form-label">Gender:</label>
+            <select class="form-control" id="personGender" name="personGender">
+                <option>Male</option>
+                <option>Female</option>
+                <option>Other</option>
+            </select>
+        </div>
+    </form>
+    <form action="/action_page.php" class="was-validated">
+        <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="check" name="conditions" required>
+            <label class="form-check-label" for="check">I accept that my data is used for statistics.</label>
+            <div class="valid-feedback">Valid.</div>
+            <div class="invalid-feedback">Check this to continue.</div>
+        </div>
+        <button type="button" class="btn btn-primary" id="submitButton" onclick="personRegister()" disabled>Save</button>
+
+    </form>
+    <h6 class="container pt-5">Are you an organizer of the event?</h6>
+    <a class="btn btn-outline-info" href="/getspersons.html">Access</a></li>
+</div>
+
+<script>
+    document.getElementById("check").addEventListener("change", function() {
+        document.getElementById("submitButton").disabled = !this.checked;
+    });
+    function no_spaces(s){
+        s.value = s.value.replace(/ /g, "");
+    }
+    function validateEmail(){
+        var emailInput = document.getElementById("personEmail");
+        var emailError = document.getElementById("emailError");
+        var email = emailInput.value;
+
+        if (!email.includes("@")) {
+            emailError.innerText = "Invalid email format.";
+            emailInput.classList.add("is-invalid");
+        } else {
+            emailError.innerText = "";
+            emailInput.classList.remove("is-invalid");
+            emailInput.classList.add("is-valid");
+        }
+    }
+    function cleanScreen() {
+        document.getElementById("personName").value = "";
+        document.getElementById("personEmail").value = "";
+        document.getElementById("personAge").value = "";
+        document.getElementById("personOccupation").value = "";
+        document.getElementById("personGender").value = "";
+    }
+
+    function personRegister() {
+
+        const formPersonName = document.getElementById("personName").value;
+        const formPersonEmail = document.getElementById("personEmail").value;
+        const formPersonAge = document.getElementById("personAge").value;
+        const formPersonOccupation = document.getElementById("personOccupation").value;
+        const formPersonGender = document.getElementById("personGender").value;
+
+        if (formPersonName === "" || formPersonEmail === "" || formPersonAge === "" || formPersonOccupation === "" || formPersonGender === "") {
+            alert("Please fill in all fields.");
+            return; // Salir de la función si algún campo está vacío
+        }
+
+        // Validar que el nombre solo contenga letras (sin números ni caracteres especiales)
+        const nameRegex = /^[a-zA-Z\u00C0-\u017F\s]+$/;
+        if (!nameRegex.test(formPersonName)) {
+            alert("Please don't give a fake name.");
+            return; // Salir de la función si el nombre no es válido
+        }
+        if (formPersonName.length < 3) {
+            alert("Please don't give a fake name.");
+            return; // Salir de la función si el nombre no es válido
+        }
+
+        // Validar que la edad esté en un rango permitido
+        if (formPersonAge<12 || formPersonAge>110) {
+            alert("Invalid age.");
+            return; // Salir de la función si la edad no es permitida
+        }
+
+        const apiUrl = "http://fil-env.eba-ahvy2im3.us-east-2.elasticbeanstalk.com/persons";
+        //const apiUrl = "http://localhost:8080/persons";
+
+       //crear el objeto
+        const personObject = {
+            name : formPersonName,
+            email : formPersonEmail,
+            age : formPersonAge,
+            occupation : formPersonOccupation,
+            gender : formPersonGender
+        };
+
+
+        // Configure the request
+        const requestOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(personObject)
+        };
+            //llamar a la URL
+
+        // Make the POST request
+        fetch(apiUrl, requestOptions)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(personFromAPI => {
+                console.log('Success:', personFromAPI);
+                cleanScreen();
+                if(personFromAPI.id === -1){
+                    alert("Existing email, try another");
+                }else{
+                    alert("Successfully registered");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error here
+            });
+    }
+</script>
+</body>
+</html>
